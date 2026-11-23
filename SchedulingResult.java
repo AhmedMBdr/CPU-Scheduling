@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Immutable output of one scheduler run.
@@ -73,7 +74,7 @@ public final class SchedulingResult {
         output.append("Process | Arrival | Burst | Finish | Waiting | Turnaround | Response\n");
         output.append("--------|---------|-------|--------|---------|------------|---------\n");
         for (Process process : processes) {
-            output.append(String.format(
+            output.append(String.format(Locale.ROOT, 
                     "%-7s | %7d | %5d | %6d | %7d | %10d | %8d%n",
                     process.getName(),
                     process.getArrivalTime(),
@@ -83,7 +84,7 @@ public final class SchedulingResult {
                     process.getTurnaroundTime(),
                     process.getResponseTime()));
         }
-        output.append(String.format(
+        output.append(String.format(Locale.ROOT, 
                 "Average waiting: %.2f%nAverage turnaround: %.2f%nAverage response: %.2f%n",
                 getAverageWaitingTime(), getAverageTurnaroundTime(), getAverageResponseTime()));
         return output.toString();

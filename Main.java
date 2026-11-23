@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Assignment entry point and shared test-case runner.
@@ -24,10 +25,10 @@ public final class Main {
                 new Process("P2", 1, 7, 3),
                 new Process("P3", 3, 2, 1));
 
-        System.out.printf("Cloud-Cluster CPU Scheduling%nQ=%d, CS=%d%n%n", quantum, contextSwitch);
+        System.out.printf(Locale.ROOT, "Cloud-Cluster CPU Scheduling%nQ=%d, CS=%d%n%n", quantum, contextSwitch);
         System.out.println("Configured test case:");
         for (Process process : testCase) {
-            System.out.printf("%s: arrival=%d, burst=%d, priority=%d%n",
+            System.out.printf(Locale.ROOT, "%s: arrival=%d, burst=%d, priority=%d%n",
                     process.getName(), process.getArrivalTime(), process.getBurstTime(),
                     process.getInitialPriority());
         }
@@ -55,7 +56,7 @@ public final class Main {
         if (result == null) {
             throw new IllegalStateException(scheduler.getName() + " returned no result");
         }
-        System.out.printf("=== %s (Q=%d, CS=%d) ===%n", result.getSchedulerName(),
+        System.out.printf(Locale.ROOT, "=== %s (Q=%d, CS=%d) ===%n", result.getSchedulerName(),
                 quantum, contextSwitchTime);
         for (String line : result.getTrace()) {
             System.out.println(line);
