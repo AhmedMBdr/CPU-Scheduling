@@ -33,7 +33,12 @@ public final class Main {
                     process.getInitialPriority());
         }
         System.out.println();
-        System.out.println("Implementations are run by calling Main.runCase(scheduler, ...).");
+        ACSScheduler acs = new ACSScheduler();
+
+        runCase(acs, testCase, quantum, contextSwitch);
+        System.out.println();
+        SJFScheduler sjf = new SJFScheduler();
+        runCase(sjf, testCase, quantum, contextSwitch);
     }
 
     /**
