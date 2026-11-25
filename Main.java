@@ -8,18 +8,21 @@ import java.util.Scanner;
 /**
  * Assignment entry point and shared test-case runner.
  *
- * <p>Schedulers are intentionally supplied to {@link #runCase}; this lets
+ * <p>
+ * Schedulers are intentionally supplied to {@link #runCase}; this lets
  * each teammate implement SJF or ACS independently against {@link Scheduler}
- * while Main remains unchanged.</p>
+ * while Main remains unchanged.
+ * </p>
  */
 public final class Main {
+
+    private static final int DEFAULT_QUANTUM = 3;
+    private static final int DEFAULT_CONTEXT_SWITCH = 0;
 
     private Main() {
     }
 
     public static void main(String[] args) {
-        int quantum = args.length > 0 ? parsePositive(args[0], "quantum") : 3;
-        int contextSwitch = args.length > 1 ? parseNonNegative(args[1], "context switch") : 0;
         String inputMode = args.length > 2 ? args[2].toLowerCase(Locale.ROOT) : null;
         if (inputMode != null && !"custom".equals(inputMode) && !"generated".equals(inputMode)) {
             throw new IllegalArgumentException("Third argument must be 'custom' or 'generated'");
@@ -44,13 +47,27 @@ public final class Main {
         }
 
         if ("custom".equals(inputMode)) {
+            // Command-line values win; otherwise ask the user.
+            int quantum;
+            if (args.length > 0) {
+                quantum = parsePositive(args[0], "quantum");
+            } else {
+                quantum = promptPositive(input, "Time quantum (Q): ", "quantum");
+            }
+            int contextSwitch;
+            if (args.length > 1) {
+                contextSwitch = parseNonNegative(args[1], "context switch");
+            } else {
+                contextSwitch = promptNonNegative(input, "Context switch time (CS): ",
+                        "context switch");
+            }
             System.out.printf(Locale.ROOT, "Q=%d, CS=%d%n%n", quantum, contextSwitch);
             runCustomInput(input, quantum, contextSwitch);
         } else {
+            // Generated test cases carry their own Q and CS values (see below).
             runGeneratedTestCases();
         }
     }
-
 
     public static void runGeneratedTestCases() {
         List<List<Process>> testCases = Arrays.asList(
@@ -74,8 +91,8 @@ public final class Main {
                         new Process("P3", 15, 4, 3),
                         new Process("P4", 16, 6, 2),
                         new Process("P5", 17, 2, 1)));
-        int[] quantums = {3, 3, 4, 5};
-        int[] contextSwitchTimes = {0, 1, 2, 3};
+        int[] quantums = { 3, 3, 4, 5 };
+        int[] contextSwitchTimes = { 0, 1, 2, 3 };
 
         Scheduler acs = new ACSScheduler();
         Scheduler sjf = new SJFScheduler();
@@ -98,8 +115,10 @@ public final class Main {
     /**
      * Reads a custom process set from standard input and runs both schedulers.
      *
-     * <p>Input is the process count followed by each process's name, arrival time,
-     * burst time, and initial priority.</p>
+     * <p>
+     * Input is the process count followed by each process's name, arrival time,
+     * burst time, and initial priority.
+     * </p>
      */
     public static void runCustomInput(Scanner input, int quantum, int contextSwitchTime) {
         if (input == null) {
@@ -151,6 +170,30 @@ public final class Main {
             throw new IllegalArgumentException(label + " must be an integer: " + input.next());
         }
         return input.nextInt();
+    }
+
+    /** Asks until the user enters an integer > 0. */
+    private static int promptPositive(Scanner input, String prompt, String label) {
+        while (true) {
+            System.out.print(prompt);
+            int value = readInputInteger(input, label);
+            if (value > 0) {
+                return value;
+            }
+            System.out.println("  " + label + " must be > 0, try again.");
+        }
+    }
+
+    /** Asks until the user enters an integer >= 0. */
+    private static int promptNonNegative(Scanner input, String prompt, String label) {
+        while (true) {
+            System.out.print(prompt);
+            int value = readInputInteger(input, label);
+            if (value >= 0) {
+                return value;
+            }
+            System.out.println("  " + label + " must be >= 0, try again.");
+        }
     }
 
     /**
